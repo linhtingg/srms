@@ -16,8 +16,7 @@ if (isset($_POST['submit'])) {
         $_SESSION['class'] = $class;
         echo "<script type='text/javascript'> document.location ='result.php'; </script>";
     } else {?>
-        <div class="alert-danger" role="alert">
-        <strong>Oh snap!</strong> <?php echo htmlentities("Your Student ID or Class ID was wrong!");?>
+        <div class="alert-danger" role="alert"> Your Student ID or Class ID was wrong!</div>
     <?php
     }
 }
