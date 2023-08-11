@@ -25,7 +25,6 @@ include('includes/config.php');
         <div class="content-wrapper">
             <div class="content-container">
 
-
                 <!-- /.left-sidebar -->
 
                 <div class="main-page">
@@ -43,123 +42,78 @@ include('includes/config.php');
 
                     <section class="section" id="exampl">
                         <div class="container-fluid">
+                        <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <div class="panel">
+                            <div class="panel-heading">
+                            <div class="panel-title">
+                            <h3 align="center">Student Result Details</h3>
+                                <hr />
+                                <?php
+                                // code Student Data
+                                $studentid = $_SESSION['studentid'];
+                                $class = $_SESSION['class'];
+                                $qery = "SELECT tblstudent.StudentID,tblstudent.StudentName, tblresult.ClassID, tblclass.SubjectCode, tblclass.Semester
+                                        FROM tblstudent INNER JOIN tblresult ON tblstudent.StudentID = tblresult.StudentID
+                                        INNER JOIN tblclass ON tblresult.ClassID = tblclass.ClassID
+                                        where tblstudent.StudentID=:studentid and tblclass.ClassId=:class ";
+                                $stmt = $dbh->prepare($qery);
+                                $stmt->bindParam(':studentid', $studentid, PDO::PARAM_STR);
+                                $stmt->bindParam(':class', $class, PDO::PARAM_STR);
+                                $stmt->execute();
+                                $resultss = $stmt->fetchAll(PDO::FETCH_OBJ);
+                                $cnt = 1;
+                                    foreach ($resultss as $row) {   ?>
+                                        <p><b>Student Name :</b> <?php echo htmlentities($row->StudentName); ?></p>
+                                        <p><b>Student ID :</b> <?php echo htmlentities($row->StudentID); ?>
+                                        <p><b>Class ID:</b> <?php echo htmlentities($row->ClassID); ?> (Subject Code: <?php echo htmlentities($row->SubjectCode); ?>)
+                                        <p><b>Semester:</b> <?php echo htmlentities($row->Semester); ?>
+                                        <?php }        ?>
+                            </div>
+                            <div class="panel-body p-20">
+                                <table class="table table-hover table-bordered" border="1" width="100%">
+                                    <thead>
+                                        <tr style="text-align: center">
+                                            <th style="text-align: center"> Subject</th>
+                                            <th style="text-align: center">Marks</th>
+                                        </tr>
+                                    </thead>
 
-                            <div class="row">
+                                    <tbody>
+                                        <?php
+                                        // Code for result
+                                        $query = "select * from resultclasssubject where studentid=:studentid and classid=:class";
+                                        $query = $dbh->prepare($query);
+                                        $query->bindParam(':studentid', $studentid, PDO::PARAM_STR);
+                                        $query->bindParam(':class', $class, PDO::PARAM_STR);
+                                        $query->execute();
+                                        $results = $query->fetchAll(PDO::FETCH_OBJ);
+                                        if ($countrow = $query->rowCount() > 0) {
+                                            foreach ($results as $result) {
+                                        ?>
+                                                <tr>
+                                                    <td style="text-align: center"><?php echo htmlentities($result->SubjectName); ?></td>
+                                                    <td style="text-align: center"><?php echo htmlentities($totalmarks = $result->Grade); ?></td>
+                                                </tr>
+                                            <?php
+                                            }
+                                            ?>
 
+                                            <tr>
+                                                <td colspan="3" align="center"><i class="fa fa-print fa-2x" aria-hidden="true" style="cursor:pointer" OnClick="CallPrint(this.value)"></i></td>
+                                            </tr>
 
-
-                                <div class="col-md-8 col-md-offset-2">
-                                    <div class="panel">
-                                        <div class="panel-heading">
-                                            <div class="panel-title">
-                                                <h3 align="center">Student Result Details</h3>
-                                                <hr />
-                                                <?php
-                                                // code Student Data
-                                                $rollid = $_POST['rollid'];
-                                                $classid = $_POST['class'];
-                                                $_SESSION['rollid'] = $rollid;
-                                                $_SESSION['classid'] = $classid;
-                                                $qery = "SELECT   tblstudents.StudentName,tblstudents.RollId,tblstudents.RegDate,tblstudents.StudentId,tblstudents.Status,tblclasses.ClassName,tblclasses.Section from tblstudents join tblclasses on tblclasses.id=tblstudents.ClassId where tblstudents.RollId=:rollid and tblstudents.ClassId=:classid ";
-                                                $stmt = $dbh->prepare($qery);
-                                                $stmt->bindParam(':rollid', $rollid, PDO::PARAM_STR);
-                                                $stmt->bindParam(':classid', $classid, PDO::PARAM_STR);
-                                                $stmt->execute();
-                                                $resultss = $stmt->fetchAll(PDO::FETCH_OBJ);
-                                                $cnt = 1;
-                                                if ($stmt->rowCount() > 0) {
-                                                    foreach ($resultss as $row) {   ?>
-                                                        <p><b>Student Name :</b> <?php echo htmlentities($row->StudentName); ?></p>
-                                                        <p><b>Student Roll Id :</b> <?php echo htmlentities($row->RollId); ?>
-                                                        <p><b>Student Class:</b> <?php echo htmlentities($row->ClassName); ?>(<?php echo htmlentities($row->Section); ?>)
-                                                        <?php }
-
-                                                        ?>
+                                        <?php } else { ?>
+                                            <div class="alert alert-warning left-icon-alert" role="alert">
+                                                <strong>Notice!</strong> Your result is not declare yet!
+                                            <?php }
+                                            ?>
                                             </div>
-                                            <div class="panel-body p-20">
-
-
-
-
-
-
-
-                                                <table class="table table-hover table-bordered" border="1" width="100%">
-                                                    <thead>
-                                                        <tr style="text-align: center">
-                                                            <th style="text-align: center">#</th>
-                                                            <th style="text-align: center"> Subject</th>
-                                                            <th style="text-align: center">Marks</th>
-                                                        </tr>
-                                                    </thead>
-
-
-
-
-                                                    <tbody>
-                                                        <?php
-                                                        // Code for result
-
-                                                        $query = "select t.StudentName,t.RollId,t.ClassId,t.marks,SubjectId,tblsubjects.SubjectName from (select sts.StudentName,sts.RollId,sts.ClassId,tr.marks,SubjectId from tblstudents as sts join  tblresult as tr on tr.StudentId=sts.StudentId) as t join tblsubjects on tblsubjects.id=t.SubjectId where (t.RollId=:rollid and t.ClassId=:classid)";
-                                                        $query = $dbh->prepare($query);
-                                                        $query->bindParam(':rollid', $rollid, PDO::PARAM_STR);
-                                                        $query->bindParam(':classid', $classid, PDO::PARAM_STR);
-                                                        $query->execute();
-                                                        $results = $query->fetchAll(PDO::FETCH_OBJ);
-                                                        $cnt = 1;
-                                                        if ($countrow = $query->rowCount() > 0) {
-                                                            foreach ($results as $result) {
-
-                                                        ?>
-
-                                                                <tr>
-                                                                    <th scope="row" style="text-align: center"><?php echo htmlentities($cnt); ?></th>
-                                                                    <td style="text-align: center"><?php echo htmlentities($result->SubjectName); ?></td>
-                                                                    <td style="text-align: center"><?php echo htmlentities($totalmarks = $result->marks); ?></td>
-                                                                </tr>
-                                                            <?php
-                                                                $totlcount += $totalmarks;
-                                                                $cnt++;
-                                                            }
-                                                            ?>
-                                                            <tr>
-                                                                <th scope="row" colspan="2" style="text-align: center">Total Marks</th>
-                                                                <td style="text-align: center"><b><?php echo htmlentities($totlcount); ?></b> out of <b><?php echo htmlentities($outof = ($cnt - 1) * 100); ?></b></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" colspan="2" style="text-align: center">Percntage</th>
-                                                                <td style="text-align: center"><b><?php echo  htmlentities($totlcount * (100) / $outof); ?> %</b></td>
-                                                            </tr>
-
-                                                            <tr>
-
-                                                                <td colspan="3" align="center"><i class="fa fa-print fa-2x" aria-hidden="true" style="cursor:pointer" OnClick="CallPrint(this.value)"></i></td>
-                                                            </tr>
-
-                                                        <?php } else { ?>
-                                                            <div class="alert alert-warning left-icon-alert" role="alert">
-                                                                <strong>Notice!</strong> Your result not declare yet
-                                                            <?php }
-                                                            ?>
-                                                            </div>
-                                                        <?php
-                                                    } else { ?>
-
-                                                            <div class="alert alert-danger left-icon-alert" role="alert">
-                                                                strong>Oh snap!</strong>
-                                                            <?php
-                                                            echo htmlentities("Invalid Roll Id");
-                                                        }
-                                                            ?>
-                                                            </div>
-
-
-
-                                                    </tbody>
-                                                </table>
-
                                             </div>
-                                        </div>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                                         <!-- /.panel -->
                                     </div>
                                     <!-- /.col-md-6 -->
@@ -205,9 +159,7 @@ include('includes/config.php');
     <script src="js/main.js"></script>
     <script>
         $(function($) {
-
         });
-
 
         function CallPrint(strid) {
             var prtContent = document.getElementById("exampl");
