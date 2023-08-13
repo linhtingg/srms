@@ -8,14 +8,20 @@ if (strlen($_SESSION['alogin']) == "") {
     if (isset($_POST['submit'])) {
         $subjectname = $_POST['subjectname'];
         $subjectcode = $_POST['subjectcode'];
-        $sql = "INSERT INTO  tblsubjects(SubjectName,SubjectCode) VALUES(:subjectname,:subjectcode)";
+        $credit = $_POST['credit'];
+        $percentage = $_POST['percentage'];
+        
+        $sql = "INSERT INTO tblsubject(subjectname,subjectcode, credit, percentage) VALUES(:subjectname,:subjectcode, :credit, :percentage)";
         $query = $dbh->prepare($sql);
         $query->bindParam(':subjectname', $subjectname, PDO::PARAM_STR);
         $query->bindParam(':subjectcode', $subjectcode, PDO::PARAM_STR);
+        $query->bindParam(':credit', $credit, PDO::PARAM_STR);
+        $query->bindParam(':percentage', $percentage, PDO::PARAM_STR);
         $query->execute();
+
         $lastInsertId = $dbh->lastInsertId();
         if ($lastInsertId) {
-            $msg = "Subject Created successfully";
+            $msg = "Subject added successfully";
         } else {
             $error = "Something went wrong. Please try again";
         }
@@ -41,26 +47,20 @@ if (strlen($_SESSION['alogin']) == "") {
 
     <body class="top-navbar-fixed">
         <div class="main-wrapper">
-
             <!-- ========== TOP NAVBAR ========== -->
             <?php include('includes/topbar.php'); ?>
             <!-- ========== WRAPPER FOR BOTH SIDEBARS & MAIN CONTENT ========== -->
             <div class="content-wrapper">
                 <div class="content-container">
-
                     <!-- ========== LEFT SIDEBAR ========== -->
                     <?php include('includes/leftbar.php'); ?>
                     <!-- /.left-sidebar -->
-
                     <div class="main-page">
-
                         <div class="container-fluid">
                             <div class="row page-title-div">
                                 <div class="col-md-6">
                                     <h2 class="title">Subject Creation</h2>
-
                                 </div>
-
                                 <!-- /.col-md-6 text-right -->
                             </div>
                             <!-- /.row -->
@@ -72,7 +72,6 @@ if (strlen($_SESSION['alogin']) == "") {
                                         <li class="active">Create Subject</li>
                                     </ul>
                                 </div>
-
                             </div>
                             <!-- /.row -->
                         </div>
@@ -99,17 +98,27 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 <div class="form-group">
                                                     <label for="default" class="col-sm-2 control-label">Subject Name</label>
                                                     <div class="col-sm-10">
-                                                        <input type="text" name="subjectname" class="form-control" id="default" placeholder="Subject Name" required="required">
+                                                        <input type="text" name="subjectname" class="form-control" id="subjectname" placeholder="Subject Name" required="required">
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="default" class="col-sm-2 control-label">Subject Code</label>
                                                     <div class="col-sm-10">
-                                                        <input type="text" name="subjectcode" class="form-control" id="default" placeholder="Subject Code" required="required">
+                                                        <input type="text" name="subjectcode" class="form-control" id="subjectcode" placeholder="Subject Code" required="required">
                                                     </div>
                                                 </div>
-
-
+                                                <div class="form-group">
+                                                    <label for="default" class="col-sm-2 control-label">Credits</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="number" min=0 name="credit" class="form-control" id="credit" placeholder="Worth of .... credits" required="required">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="default" class="col-sm-2 control-label">Final Exam Percentage</label>
+                                                    <div class="col-sm-10">
+                                                        <input type="number" min=0 max=1 step="0.1" name="percentage" class="form-control" id="percentage" placeholder="Final Exam Percentage" required="required">
+                                                    </div>
+                                                </div>
 
                                                 <div class="form-group">
                                                     <div class="col-sm-offset-2 col-sm-10">

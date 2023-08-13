@@ -11,7 +11,6 @@ if (strlen($_SESSION['alogin']) == "") {
         $email = $_POST['email'];
         $gender = $_POST['gender'];
         $dob = $_POST['dob'];
-        $classid=$_POST['classid'];
         $sql = "INSERT INTO tblstudent(StudentName,StudentID,StudentEmail,Gender,DOB) 
                 VALUES(:fullname,:studentid,:email,:gender,:dob);";
         $query = $dbh->prepare($sql);
@@ -25,12 +24,6 @@ if (strlen($_SESSION['alogin']) == "") {
         $lastInsertId = $dbh->lastInsertId();
         //echo "<script type='text/javascript'>alert('$lastInsertId');</script>";
         if ($lastInsertId >0 ) {
-            $sql1 = "INSERT INTO tblresult(StudentID,ClassID) VALUES(:studentid,:classid);";
-            $query1 = $dbh->prepare($sql1);
-            $query1->bindParam(':classid', $classid, PDO::PARAM_STR);
-            $query1->bindParam(':studentid', $studentid, PDO::PARAM_STR);
-            $query1->execute();
-            //echo "<script type='text/javascript'>alert('$classid');</script>";
             $msg = "Student info added successfully";
         } else{
             $error = "Something went wrong. Please try again";
@@ -133,24 +126,6 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         <input type="radio" name="gender" value="Male" required="required" checked="">  Male  
                                                         <input type="radio" name="gender" value="Female" required="required">  Female  
                                                         <input type="radio" name="gender" value="Other" required="required">  Other
-                                                    </div>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="default" class="col-sm-2 control-label">Class</label>
-                                                    <div class="col-sm-10">
-                                                        <select name="classid" class="form-control" id="classid" required="required">
-                                                            <option value="">Select Class</option>
-                                                            <?php $sql = "SELECT * from tblclass";
-                                                            $query = $dbh->prepare($sql);
-                                                            $query->execute();
-                                                            $results = $query->fetchAll(PDO::FETCH_OBJ);
-                                                            if ($query->rowCount() > 0) {
-                                                                foreach ($results as $result) {   ?>
-                                                                    <option value="<?php echo htmlentities($result->ClassID); ?>"><?php echo htmlentities($result->ClassID);?> (<?php echo htmlentities($result->SubjectCode); ?>) - <?php echo htmlentities($result->Description); ?> </option>
-                                                            <?php }
-                                                            } ?>
-                                                        </select>
                                                     </div>
                                                 </div>
 

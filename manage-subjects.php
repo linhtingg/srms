@@ -5,7 +5,16 @@ include('includes/config.php');
 if (strlen($_SESSION['alogin']) == "") {
     header("Location: index.php");
 } else {
-
+    //For Deleting subject
+    if ($_GET['sjid']) {
+        $sjid = $_GET['sjid'];
+        $sql = "delete from tblsubject where subjectcode=:sjid";
+        $query = $dbh->prepare($sql);
+        $query->bindParam(':sjid', $sjid, PDO::PARAM_STR);
+        $query->execute();
+        echo '<script>alert("subject deleted.")</script>';
+        echo "<script>window.location.href ='manage-subjects.php'</script>";
+    }
 ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -59,9 +68,7 @@ if (strlen($_SESSION['alogin']) == "") {
                             <div class="row page-title-div">
                                 <div class="col-md-6">
                                     <h2 class="title">Manage Subjects</h2>
-
                                 </div>
-
                                 <!-- /.col-md-6 text-right -->
                             </div>
                             <!-- /.row -->
@@ -73,26 +80,15 @@ if (strlen($_SESSION['alogin']) == "") {
                                         <li class="active">Manage Subjects</li>
                                     </ul>
                                 </div>
-
                             </div>
                             <!-- /.row -->
                         </div>
                         <!-- /.container-fluid -->
-
                         <section class="section">
                             <div class="container-fluid">
-
-
-
                                 <div class="row">
                                     <div class="col-md-12">
-
                                         <div class="panel">
-                                            <div class="panel-heading">
-                                                <div class="panel-title">
-                                                    <h5>View Subjects Info</h5>
-                                                </div>
-                                            </div>
                                             <?php if ($msg) { ?>
                                                 <div class="alert alert-success left-icon-alert" role="alert">
                                                     <strong>Well done!</strong><?php echo htmlentities($msg); ?>
@@ -102,30 +98,19 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 </div>
                                             <?php } ?>
                                             <div class="panel-body p-20">
-
                                                 <table id="example" class="display table table-striped table-bordered" cellspacing="0" width="100%">
                                                     <thead>
                                                         <tr>
                                                             <th>#</th>
                                                             <th>Subject Name</th>
                                                             <th>Subject Code</th>
-                                                            <th>Creation Date</th>
-                                                            <th>Updation Date</th>
+                                                            <th>Credits</th>
+                                                            <th>Percentage</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
-                                                    <tfoot>
-                                                        <tr>
-                                                            <th>#</th>
-                                                            <th>Subject Name</th>
-                                                            <th>Subject Code</th>
-                                                            <th>Creation Date</th>
-                                                            <th>Updation Date</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </tfoot>
                                                     <tbody>
-                                                        <?php $sql = "SELECT * from tblsubjects";
+                                                        <?php $sql = "SELECT * from tblsubject";
                                                         $query = $dbh->prepare($sql);
                                                         $query->execute();
                                                         $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -136,11 +121,12 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                     <td><?php echo htmlentities($cnt); ?></td>
                                                                     <td><?php echo htmlentities($result->SubjectName); ?></td>
                                                                     <td><?php echo htmlentities($result->SubjectCode); ?></td>
-                                                                    <td><?php echo htmlentities($result->Creationdate); ?></td>
-                                                                    <td><?php echo htmlentities($result->UpdationDate); ?></td>
+                                                                    <td><?php echo htmlentities($result->Credit); ?></td>
+                                                                    <td><?php echo htmlentities($result->Percentage); ?></td>
                                                                     <td>
-                                                                        <a href="edit-subject.php?subjectid=<?php echo htmlentities($result->id); ?>"><i class="fa fa-edit" title="Edit Record"></i> </a>
-
+                                                                        <a href="manage-subjects.php?sjid=<?php echo htmlentities($result->SubjectCode); ?>"
+                                                                        onclick ="return confirm('Do you really want to delete this subject?');">
+                                                                        <i class="fa fa-trash fa-2x" title="Delete this Record" style="color:red;"></i> </a>
                                                                     </td>
                                                                 </tr>
                                                         <?php $cnt = $cnt + 1;

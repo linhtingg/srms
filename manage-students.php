@@ -128,7 +128,8 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                     <td><?php echo htmlentities($result->ClassID); ?></td>
                                                                     <td><?php echo htmlentities($result->SubjectName); ?></td>
                                                                     <td>
-                                                                        <a href="manage-students.php?stid=<?php echo htmlentities($result->StudentID); ?>" onclick ="return confirm('Do you really want to delete this student?');">
+                                                                        <a href="manage-students.php?stid=<?php echo htmlentities($result->StudentID); ?>" 
+                                                                        onclick ="return confirm('Do you really want to delete this student?');">
                                                                         <i class="fa fa-trash fa-2x" title="Delete this Record" style="color:red;"></i> </a>
 
                                                                     </td>
