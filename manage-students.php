@@ -91,11 +91,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="panel">
-                                            <div class="panel-heading">
-                                                <div class="panel-title">
-                                                    <h5>View Students Info</h5>
-                                                </div>
-                                            </div>
+                                            
                                             <?php if ($msg) { ?>
                                                 <div class="alert alert-success left-icon-alert" role="alert">
                                                     <strong>Well done!</strong><?php echo htmlentities($msg); ?>

@@ -6,14 +6,16 @@ if (strlen($_SESSION['alogin']) == "") {
     header("Location: index.php");
 } else {
     if (isset($_POST['submit'])) {
-        $classname = $_POST['classname'];
-        $classnamenumeric = $_POST['classnamenumeric'];
-        $section = $_POST['section'];
-        $sql = "INSERT INTO  tblclasses(ClassName,ClassNameNumeric,Section) VALUES(:classname,:classnamenumeric,:section)";
+        $classid = $_POST['classid'];
+        $subjectcode = $_POST['subjectcode'];
+        $semester = $_POST['semester'];
+        $description= $_POST['description'];
+        $sql = "INSERT INTO tblclass(classid,subjectcode,semester,description) VALUES(:classid,:subjectcode,:semester,:description);";
         $query = $dbh->prepare($sql);
-        $query->bindParam(':classname', $classname, PDO::PARAM_STR);
-        $query->bindParam(':classnamenumeric', $classnamenumeric, PDO::PARAM_STR);
-        $query->bindParam(':section', $section, PDO::PARAM_STR);
+        $query->bindParam(':classid', $classid, PDO::PARAM_STR);
+        $query->bindParam(':subjectcode', $subjectcode, PDO::PARAM_STR);
+        $query->bindParam(':semester', $semester, PDO::PARAM_STR);
+        $query->bindParam(':description', $description, PDO::PARAM_STR);
         $query->execute();
         $lastInsertId = $dbh->lastInsertId();
         if ($lastInsertId) {
@@ -98,11 +100,6 @@ if (strlen($_SESSION['alogin']) == "") {
 
                         <section class="section">
                             <div class="container-fluid">
-
-
-
-
-
                                 <div class="row">
                                     <div class="col-md-8 col-md-offset-2">
                                         <div class="panel">
@@ -121,31 +118,50 @@ if (strlen($_SESSION['alogin']) == "") {
                                             <?php } ?>
 
                                             <div class="panel-body">
-
                                                 <form method="post">
                                                     <div class="form-group has-success">
-                                                        <label for="success" class="control-label">Class Name</label>
+                                                        <label for="classid" class="control-label">Class ID</label>
                                                         <div class="">
-                                                            <input type="text" name="classname" class="form-control" required="required" id="success">
-                                                            <span class="help-block">Eg- Third, Fouth,Sixth etc</span>
+                                                            <input type="text" name="classid" class="form-control" required="required" id="classid">
+                                                            <span class="help-block">Eg- 138000,138001</span>
                                                         </div>
                                                     </div>
                                                     <div class="form-group has-success">
-                                                        <label for="success" class="control-label">Class Name in Numeric</label>
+                                                        <label for="subjectcode" class="control-label">Subject Code</label>
                                                         <div class="">
-                                                            <input type="number" name="classnamenumeric" required="required" class="form-control" id="success">
-                                                            <span class="help-block">Eg- 1,2,4,5 etc</span>
+                                                        <select name="subjectcode" class="form-control" id="subjectcode" required="required">
+                                                            <option value="">Select Subject</option>
+                                                            <?php $sql = "SELECT * from tblsubject";
+                                                            $query = $dbh->prepare($sql);
+                                                            $query->execute();
+                                                            $results = $query->fetchAll(PDO::FETCH_OBJ);
+                                                            if ($query->rowCount() > 0) {
+                                                                foreach ($results as $result) {   ?>
+                                                                    <option value="<?php echo htmlentities($result->SubjectCode); ?>"><?php echo htmlentities($result->SubjectCode);?> (<?php echo htmlentities($result->SubjectName); ?>) </option>
+                                                            <?php }
+                                                            } ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                    <div class="form-group has-success">
+                                                        <label for="success" class="control-label">Semester</label>
+                                                        <div class="">
+                                                        <select name="semester" id="semester" required class="form-control">
+                                                            <option value="20221">20221</option>
+                                                            <option value="20222">20222</option>
+                                                            <option value="20223">20223</option>
+                                                            <option value="20231">20231</option>
+                                                        </select>
                                                         </div>
                                                     </div>
                                                     <div class="form-group has-success">
-                                                        <label for="success" class="control-label">Section</label>
+                                                        <label for="success" class="control-label">Description</label>
                                                         <div class="">
-                                                            <input type="text" name="section" class="form-control" required="required" id="success">
-                                                            <span class="help-block">Eg- A,B,C etc</span>
+                                                            <input type="text" name="description" class="form-control" id="description">
+                                                            <span class="help-block">Eg- Thursday Morning</span>
                                                         </div>
                                                     </div>
                                                     <div class="form-group has-success">
-
                                                         <div class="">
                                                             <button type="submit" name="submit" class="btn btn-success btn-labeled">Submit<span class="btn-label btn-label-right"><i class="fa fa-check"></i></span></button>
                                                         </div>

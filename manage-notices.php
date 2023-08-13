@@ -111,7 +111,7 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                 <td><?php echo htmlentities($result->postingDate); ?></td>
                                                                 <td>
                                                                     <a href="manage-notices.php?id=<?php echo htmlentities($result->id); ?>" onclick="return confirm('Do you really want to delete the notice?');">
-                                                                        <i class="fa fa-trash fa-2x" title="Delete this Record" style="color:red;"></i> </a>
+                                                                        <i class="fa fa-trash fa-2x" title="Delete this record" style="color:red;"></i> </a>
                                                                 </td>
                                                             </tr>
                                                     <?php $cnt = $cnt + 1;

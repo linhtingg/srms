@@ -59,7 +59,6 @@ include('includes/config.php');
 
                         </ul>
                     </marquee>
-
                 </div>
             </div>
         </div>

@@ -3,22 +3,22 @@
 include('includes/config.php');
 if (!empty($_POST["class"])) {
   $cid = intval($_POST['class']);
-  $stmt = $dbh->prepare("SELECT tblstudent.StudentName, tblstudent.StudentID , tblresult.ClassID
-                        FROM tblstudent INNER join tblresult 
+  $stmt = $dbh->prepare("SELECT * from tblstudent 
+                        where tblstudent.StudentID NOT IN
+                        (SELECT tblstudent.StudentID FROM tblstudent INNER join tblresult 
                         ON tblstudent.StudentID=tblresult.studentid 
-                        WHERE tblresult.ClassID = :cid
-                        order by StudentID;");
+                        WHERE tblresult.ClassID =:cid); ");
   $stmt->execute(array(':cid' => $cid));
+?>
+  <option value="">Select student </option>
+  <?php
+  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
   ?>
-  <option value="">Select Student </option>
-    <?php
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    ?>
-  <option value = "<?php echo htmlentities($row['StudentID']); ?>">
-    <?php echo htmlentities($row['StudentID']) ." - ". htmlentities($row['StudentName']); ?></option>
-    <?php
+    <option value="<?php echo htmlentities($row['StudentID']); ?>">
+      <?php echo htmlentities($row['StudentID']) . " - " . htmlentities($row['StudentName']); ?></option>
+<?php
   }
-}?>
+} ?>
 
 <?php
 if (!empty($_POST["studclass"])) {
@@ -40,5 +40,5 @@ if (!empty($_POST["studclass"])) {
       echo "<script>$('#submit').prop('disabled',true);</script>";
       ?>
     </p>
-  <?php }
+<?php }
 } ?>
