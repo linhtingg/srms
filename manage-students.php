@@ -5,6 +5,16 @@ include('includes/config.php');
 if (strlen($_SESSION['alogin']) == "") {
     header("Location: index.php");
 } else {
+    //For Deleting student
+    if ($_GET['stid']) {
+        $stid = $_GET['stid'];
+        $sql = "delete from tblstudent where studentid=:stid";
+        $query = $dbh->prepare($sql);
+        $query->bindParam(':stid', $stid, PDO::PARAM_STR);
+        $query->execute();
+        echo '<script>alert("Student deleted.")</script>';
+        echo "<script>window.location.href ='manage-students.php'</script>";
+    }
 
 ?>
     <!DOCTYPE html>
@@ -59,9 +69,7 @@ if (strlen($_SESSION['alogin']) == "") {
                             <div class="row page-title-div">
                                 <div class="col-md-6">
                                     <h2 class="title">Manage Students</h2>
-
                                 </div>
-
                                 <!-- /.col-md-6 text-right -->
                             </div>
                             <!-- /.row -->
@@ -73,7 +81,6 @@ if (strlen($_SESSION['alogin']) == "") {
                                         <li class="active">Manage Students</li>
                                     </ul>
                                 </div>
-
                             </div>
                             <!-- /.row -->
                         </div>
@@ -81,12 +88,8 @@ if (strlen($_SESSION['alogin']) == "") {
 
                         <section class="section">
                             <div class="container-fluid">
-
-
-
                                 <div class="row">
                                     <div class="col-md-12">
-
                                         <div class="panel">
                                             <div class="panel-heading">
                                                 <div class="panel-title">
@@ -102,32 +105,20 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 </div>
                                             <?php } ?>
                                             <div class="panel-body p-20">
-
                                                 <table id="example" class="display table table-striped table-bordered" cellspacing="0" width="100%">
                                                     <thead>
                                                         <tr>
                                                             <th>#</th>
                                                             <th>Student Name</th>
-                                                            <th>Roll Id</th>
-                                                            <th>Class</th>
-                                                            <th>Reg Date</th>
-                                                            <th>Status</th>
+                                                            <th>Student ID</th>
+                                                            <th>Class ID</th>
+                                                            <th>Subject Name</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
-                                                    <tfoot>
-                                                        <tr>
-                                                            <th>#</th>
-                                                            <th>Student Name</th>
-                                                            <th>Roll Id</th>
-                                                            <th>Class</th>
-                                                            <th>Reg Date</th>
-                                                            <th>Status</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </tfoot>
                                                     <tbody>
-                                                        <?php $sql = "SELECT tblstudents.StudentName,tblstudents.RollId,tblstudents.RegDate,tblstudents.StudentId,tblstudents.Status,tblclasses.ClassName,tblclasses.Section from tblstudents join tblclasses on tblclasses.id=tblstudents.ClassId";
+                                                        <?php $sql="SELECT tblstudent.StudentName,tblstudent.StudentID, resultclasssubject.ClassID,resultclasssubject.SubjectName
+                                                                    from tblstudent join resultclasssubject on tblstudent.studentid=resultclasssubject.studentid";
                                                         $query = $dbh->prepare($sql);
                                                         $query->execute();
                                                         $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -137,17 +128,12 @@ if (strlen($_SESSION['alogin']) == "") {
                                                                 <tr>
                                                                     <td><?php echo htmlentities($cnt); ?></td>
                                                                     <td><?php echo htmlentities($result->StudentName); ?></td>
-                                                                    <td><?php echo htmlentities($result->RollId); ?></td>
-                                                                    <td><?php echo htmlentities($result->ClassName); ?>(<?php echo htmlentities($result->Section); ?>)</td>
-                                                                    <td><?php echo htmlentities($result->RegDate); ?></td>
-                                                                    <td><?php if ($result->Status == 1) {
-                                                                            echo htmlentities('Active');
-                                                                        } else {
-                                                                            echo htmlentities('Blocked');
-                                                                        }
-                                                                        ?></td>
+                                                                    <td><?php echo htmlentities($result->StudentID); ?></td>
+                                                                    <td><?php echo htmlentities($result->ClassID); ?></td>
+                                                                    <td><?php echo htmlentities($result->SubjectName); ?></td>
                                                                     <td>
-                                                                        <a href="edit-student.php?stid=<?php echo htmlentities($result->StudentId); ?>"><i class="fa fa-edit" title="Edit Record"></i> </a>
+                                                                        <a href="manage-students.php?stid=<?php echo htmlentities($result->StudentID); ?>" onclick ="return confirm('Do you really want to delete this student?');">
+                                                                        <i class="fa fa-trash fa-2x" title="Delete this Record" style="color:red;"></i> </a>
 
                                                                     </td>
                                                                 </tr>
@@ -182,17 +168,12 @@ if (strlen($_SESSION['alogin']) == "") {
         <!-- /.container-fluid -->
         </section>
         <!-- /.section -->
-
         </div>
         <!-- /.main-page -->
-
-
-
         </div>
         <!-- /.content-container -->
         </div>
         <!-- /.content-wrapper -->
-
         </div>
         <!-- /.main-wrapper -->
 
