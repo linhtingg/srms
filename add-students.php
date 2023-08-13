@@ -12,22 +12,29 @@ if (strlen($_SESSION['alogin']) == "") {
         $gender = $_POST['gender'];
         $dob = $_POST['dob'];
         $classid=$_POST['classid'];
-        $sql = "BEGIN; 
-                    INSERT INTO tblstudent(StudentName,StudentID,StudentEmail,Gender,DOB) 
-                    VALUES(:fullname,:studentid,:email,:gender,:dob);
-                    INSERT INTO tblresult(StudentID,ClassID) 
-                    VALUES(:studentid,:classid);
-                COMMIT;";
+        $sql = "INSERT INTO tblstudent(StudentName,StudentID,StudentEmail,Gender,DOB) 
+                VALUES(:fullname,:studentid,:email,:gender,:dob);";
         $query = $dbh->prepare($sql);
         $query->bindParam(':fullname', $fullname, PDO::PARAM_STR);
         $query->bindParam(':studentid', $studentid, PDO::PARAM_STR);
         $query->bindParam(':email', $email, PDO::PARAM_STR);
         $query->bindParam(':gender', $gender, PDO::PARAM_STR);
         $query->bindParam(':dob', $dob, PDO::PARAM_STR);
-        $query->bindParam(':classid', $classid, PDO::PARAM_STR);
         $query->execute();
-        
-        $msg = "Student info added successfully";
+
+        $lastInsertId = $dbh->lastInsertId();
+        //echo "<script type='text/javascript'>alert('$lastInsertId');</script>";
+        if ($lastInsertId >0 ) {
+            $sql1 = "INSERT INTO tblresult(StudentID,ClassID) VALUES(:studentid,:classid);";
+            $query1 = $dbh->prepare($sql1);
+            $query1->bindParam(':classid', $classid, PDO::PARAM_STR);
+            $query1->bindParam(':studentid', $studentid, PDO::PARAM_STR);
+            $query1->execute();
+            //echo "<script type='text/javascript'>alert('$classid');</script>";
+            $msg = "Student info added successfully";
+        } else{
+            $error = "Something went wrong. Please try again";
+        }
     }
 ?>
     <!DOCTYPE html>
