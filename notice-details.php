@@ -39,7 +39,6 @@ include('includes/config.php');
         <div class="container my-5">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
-
                     <?php
                     $noticeid = $_GET['nid'];
                     $sql = "SELECT * from tblnotice where id='$noticeid'";
@@ -49,23 +48,16 @@ include('includes/config.php');
                     $cnt = 1;
                     if ($query->rowCount() > 0) {
                         foreach ($results as $result) {   ?>
-
                             <h3><?php echo htmlentities($result->noticeTitle); ?></h3>
                             <p><strong>Notice Posting Date:</strong> <?php echo htmlentities($result->postingDate); ?></p>
                             <hr color="#000" />
-
                             <p><?php echo htmlentities($result->noticeDetails); ?></p>
                     <?php }
                     } ?>
-
-
-
-
                 </div>
             </div>
         </div>
     </section>
-
 
     <!-- Footer-->
     <footer class="py-5 bg-dark">

@@ -80,25 +80,21 @@ if (strlen($_SESSION['alogin']) == "") {
                 <div class="content-container">
                     <?php include('includes/leftbar.php'); ?>
                     <!-- /.left-sidebar -->
-
                     <div class="main-page">
                         <div class="container-fluid">
                             <div class="row page-title-div">
                                 <div class="col-md-6">
                                     <h2 class="title">Admin Change Password</h2>
                                 </div>
-
                             </div>
                             <!-- /.row -->
                             <div class="row breadcrumb-div">
                                 <div class="col-md-6">
                                     <ul class="breadcrumb">
                                         <li><a href="dashboard.php"><i class="fa fa-home"></i> Home</a></li>
-
                                         <li class="active">Admin change password</li>
                                     </ul>
                                 </div>
-
                             </div>
                             <!-- /.row -->
                         </div>
@@ -106,11 +102,6 @@ if (strlen($_SESSION['alogin']) == "") {
 
                         <section class="section">
                             <div class="container-fluid">
-
-
-
-
-
                                 <div class="row">
                                     <div class="col-md-8 col-md-offset-2">
                                         <div class="panel">
@@ -135,7 +126,6 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         <label for="success" class="control-label">Current Password</label>
                                                         <div class="">
                                                             <input type="password" name="password" class="form-control" required="required" id="success">
-
                                                         </div>
                                                     </div>
                                                     <div class="form-group has-success">
@@ -151,39 +141,26 @@ if (strlen($_SESSION['alogin']) == "") {
                                                         </div>
                                                     </div>
                                                     <div class="form-group has-success">
-
                                                         <div class="">
                                                             <button type="submit" name="submit" class="btn btn-success btn-labeled">Change<span class="btn-label btn-label-right"><i class="fa fa-check"></i></span></button>
                                                         </div>
-
-
-
                                                 </form>
-
-
                                             </div>
                                         </div>
                                     </div>
                                     <!-- /.col-md-8 col-md-offset-2 -->
                                 </div>
                                 <!-- /.row -->
-
-
-
-
                             </div>
                             <!-- /.container-fluid -->
                         </section>
                         <!-- /.section -->
-
                     </div>
                     <!-- /.main-page -->
-
                 </div>
                 <!-- /.content-container -->
             </div>
             <!-- /.content-wrapper -->
-
         </div>
         <!-- /.main-wrapper -->
 
@@ -194,14 +171,11 @@ if (strlen($_SESSION['alogin']) == "") {
         <script src="js/pace/pace.min.js"></script>
         <script src="js/lobipanel/lobipanel.min.js"></script>
         <script src="js/iscroll/iscroll.js"></script>
-
         <!-- ========== PAGE JS FILES ========== -->
         <script src="js/prism/prism.js"></script>
 
         <!-- ========== THEME JS ========== -->
         <script src="js/main.js"></script>
-
-
 
         <!-- ========== ADD custom.js FILE BELOW WITH YOUR CHANGES ========== -->
     </body>
