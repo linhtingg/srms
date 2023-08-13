@@ -18,16 +18,13 @@ if (isset($_POST['login'])) {
         $_SESSION['alogin'] = $_POST['username'];
         echo "<script type='text/javascript'> document.location = 'dashboard.php'; </script>";
     } else {
-
         echo "<script>alert('Invalid Details');</script>";
     }
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -43,7 +40,6 @@ if (isset($_POST['login'])) {
 
 <body class="">
     <div class="main-wrapper">
-
         <div class="">
             <div class="row">
                 <h1 align="center">Student Result Management System</h1>
@@ -52,7 +48,6 @@ if (isset($_POST['login'])) {
                     <section class="section">
                         <div class="row mt-40">
                             <div class="col-md-10 col-md-offset-1 pt-50">
-
                                 <div class="row mt-30 ">
                                     <div class="col-md-11">
                                         <div class="panel">
@@ -75,7 +70,6 @@ if (isset($_POST['login'])) {
                                                             <input type="password" name="password" class="form-control" id="inputPassword3" placeholder="Password">
                                                         </div>
                                                     </div>
-
                                                     <div class="form-group mt-20">
                                                         <div class="col-sm-offset-2 col-sm-10">
                                                             <button type="submit" name="login" class="btn btn-success btn-labeled pull-right">Sign in<span class="btn-label btn-label-right"><i class="fa fa-check"></i></span></button>
@@ -102,7 +96,6 @@ if (isset($_POST['login'])) {
             <!-- /.row -->
         </div>
         <!-- /. -->
-
     </div>
     <!-- /.main-wrapper -->
 
