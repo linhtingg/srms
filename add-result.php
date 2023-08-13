@@ -22,7 +22,7 @@ if (strlen($_SESSION['alogin']) == "") {
         if ($stmt->rowCount() > 0) {
             $msg = "Result info added successfully";
         } else {
-            $error = "Something went wrong. Please try again";
+            //$error = "Something went wrong. Please try again";
         }
     }
     }
