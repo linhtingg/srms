@@ -5,27 +5,22 @@ include('includes/config.php');
 if (strlen($_SESSION['alogin']) == "") {
     header("Location: index.php");
 } else {
-
-    $stid = intval($_GET['stid']);
+    $stid = $_GET['stid'];
+    $cid = intval($_GET['cid']);
     if (isset($_POST['submit'])) {
-
-        $rowid = $_POST['id'];
-        $marks = $_POST['marks'];
-
-        foreach ($_POST['id'] as $count => $id) {
-            $mrks = $marks[$count];
-            $iid = $rowid[$count];
-            for ($i = 0; $i <= $count; $i++) {
-
-                $sql = "update tblresult  set marks=:mrks where id=:iid ";
-                $query = $dbh->prepare($sql);
-                $query->bindParam(':mrks', $mrks, PDO::PARAM_STR);
-                $query->bindParam(':iid', $iid, PDO::PARAM_STR);
-                $query->execute();
-
-                $msg = "Result info updated successfully";
-            }
-        }
+        $assetpoint = $_POST['assetpoint'];
+        $finalpoint = $_POST['finalpoint'];
+        
+        $query = $dbh->prepare("UPDATE resultclasssubject
+                                SET finalpoint = :finalpoint, assetpoint = :assetpoint, 
+                                grade = round(:finalpoint*percentage + :assetpoint*(1-percentage),2)
+                                WHERE studentid=:stid and classid=:cid;");
+        $query->bindParam(':stid', $stid, PDO::PARAM_STR);
+        $query->bindParam(':cid', $cid, PDO::PARAM_STR);
+        $query->bindParam(':assetpoint', $assetpoint, PDO::PARAM_STR);
+        $query->bindParam(':finalpoint', $finalpoint, PDO::PARAM_STR);
+        $query->execute();
+        $msg = "Result info updated successfully";
     }
 
 ?>
@@ -46,29 +41,23 @@ if (strlen($_SESSION['alogin']) == "") {
                 <link rel="stylesheet" href="css/main.css" media="screen">
                 <script src="js/modernizr/modernizr.min.js"></script>
     </head>
-
     <body class="top-navbar-fixed">
         <div class="main-wrapper">
-
             <!-- ========== TOP NAVBAR ========== -->
             <?php include('includes/topbar.php'); ?>
             <!-- ========== WRAPPER FOR BOTH SIDEBARS & MAIN CONTENT ========== -->
             <div class="content-wrapper">
                 <div class="content-container">
-
                     <!-- ========== LEFT SIDEBAR ========== -->
                     <?php include('includes/leftbar.php'); ?>
                     <!-- /.left-sidebar -->
 
                     <div class="main-page">
-
                         <div class="container-fluid">
                             <div class="row page-title-div">
                                 <div class="col-md-6">
                                     <h2 class="title">Student Result Info</h2>
-
                                 </div>
-
                                 <!-- /.col-md-6 text-right -->
                             </div>
                             <!-- /.row -->
@@ -76,16 +65,13 @@ if (strlen($_SESSION['alogin']) == "") {
                                 <div class="col-md-6">
                                     <ul class="breadcrumb">
                                         <li><a href="dashboard.php"><i class="fa fa-home"></i> Home</a></li>
-
                                         <li class="active">Result Info</li>
                                     </ul>
                                 </div>
-
                             </div>
                             <!-- /.row -->
                         </div>
                         <div class="container-fluid">
-
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="panel">
@@ -104,63 +90,43 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 </div>
                                             <?php } ?>
                                             <form class="form-horizontal" method="post">
-
                                                 <?php
-
-                                                $ret = "SELECT tblstudents.StudentName,tblclasses.ClassName,tblclasses.Section from tblresult join tblstudents on tblresult.StudentId=tblresult.StudentId join tblsubjects on tblsubjects.id=tblresult.SubjectId join tblclasses on tblclasses.id=tblstudents.ClassId where tblstudents.StudentId=:stid limit 1";
+                                                $ret = "SELECT studentid,classid,assetpoint,finalpoint,grade from tblresult 
+                                                        where studentid=:stid and ClassID=:cid";
                                                 $stmt = $dbh->prepare($ret);
                                                 $stmt->bindParam(':stid', $stid, PDO::PARAM_STR);
+                                                $stmt->bindParam(':cid', $cid, PDO::PARAM_STR);
                                                 $stmt->execute();
                                                 $result = $stmt->fetchAll(PDO::FETCH_OBJ);
                                                 $cnt = 1;
                                                 if ($stmt->rowCount() > 0) {
                                                     foreach ($result as $row) {  ?>
-
-
                                                         <div class="form-group">
-                                                            <label for="default" class="col-sm-2 control-label">Class</label>
+                                                            <label for="default" class="col-sm-2 control-label">Class ID</label>
                                                             <div class="col-sm-10">
-                                                                <?php echo htmlentities($row->ClassName) ?>(<?php echo htmlentities($row->Section) ?>)
+                                                                <?php echo htmlentities($row->classid);?>
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="default" class="col-sm-2 control-label">Full Name</label>
+                                                            <label for="default" class="col-sm-2 control-label">Student ID</label>
                                                             <div class="col-sm-10">
-                                                                <?php echo htmlentities($row->StudentName); ?>
+                                                                <?php echo htmlentities($row->studentid); ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="default" class="col-sm-2 control-label">Asset Point</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="number" step="0.1" name="assetpoint" class="form-control" id="assetpoint" placeholder="<?php echo htmlentities($row->assetpoint);?>" required="required" autocomplete="off">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="default" class="col-sm-2 control-label">Final Point</label>
+                                                            <div class="col-sm-10">
+                                                                <input type="number" step="0.1" name="finalpoint" class="form-control" id="finalpoint" placeholder="<?php echo htmlentities($row->finalpoint);?>" required="required" autocomplete="off">
                                                             </div>
                                                         </div>
                                                 <?php }
                                                 } ?>
-
-
-
-                                                <?php
-                                                $sql = "SELECT distinct tblstudents.StudentName,tblstudents.StudentId,tblclasses.ClassName,tblclasses.Section,tblsubjects.SubjectName,tblresult.marks,tblresult.id as resultid from tblresult join tblstudents on tblstudents.StudentId=tblresult.StudentId join tblsubjects on tblsubjects.id=tblresult.SubjectId join tblclasses on tblclasses.id=tblstudents.ClassId where tblstudents.StudentId=:stid ";
-                                                $query = $dbh->prepare($sql);
-                                                $query->bindParam(':stid', $stid, PDO::PARAM_STR);
-                                                $query->execute();
-                                                $results = $query->fetchAll(PDO::FETCH_OBJ);
-                                                $cnt = 1;
-                                                if ($query->rowCount() > 0) {
-                                                    foreach ($results as $result) {  ?>
-
-
-
-                                                        <div class="form-group">
-                                                            <label for="default" class="col-sm-2 control-label"><?php echo htmlentities($result->SubjectName) ?></label>
-                                                            <div class="col-sm-10">
-                                                                <input type="hidden" name="id[]" value="<?php echo htmlentities($result->resultid) ?>">
-                                                                <input type="text" name="marks[]" class="form-control" id="marks" value="<?php echo htmlentities($result->marks) ?>" maxlength="5" required="required" autocomplete="off">
-                                                            </div>
-                                                        </div>
-
-
-
-
-                                                <?php }
-                                                } ?>
-
-
                                                 <div class="form-group">
                                                     <div class="col-sm-offset-2 col-sm-10">
                                                         <button type="submit" name="submit" class="btn btn-primary">Update</button>

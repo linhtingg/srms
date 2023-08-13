@@ -102,32 +102,20 @@ if (strlen($_SESSION['alogin']) == "") {
                                                 </div>
                                             <?php } ?>
                                             <div class="panel-body p-20">
-
                                                 <table id="example" class="display table table-striped table-bordered" cellspacing="0" width="100%">
                                                     <thead>
                                                         <tr>
                                                             <th>#</th>
-                                                            <th>Student Name</th>
-                                                            <th>Roll Id</th>
-                                                            <th>Class</th>
-                                                            <th>Reg Date</th>
-                                                            <th>Status</th>
+                                                            <th>Student ID</th>
+                                                            <th>Class ID</th>
+                                                            <th>Asset Point</th>
+                                                            <th>Final Point</th>
+                                                            <th>Total Grade</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
-                                                    <tfoot>
-                                                        <tr>
-                                                            <th>#</th>
-                                                            <th>Student Name</th>
-                                                            <th>Roll Id</th>
-                                                            <th>Class</th>
-                                                            <th>Reg Date</th>
-                                                            <th>Status</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </tfoot>
                                                     <tbody>
-                                                        <?php $sql = "SELECT  distinct tblstudents.StudentName,tblstudents.RollId,tblstudents.RegDate,tblstudents.StudentId,tblstudents.Status,tblclasses.ClassName,tblclasses.Section from tblresult join tblstudents on tblstudents.StudentId=tblresult.StudentId  join tblclasses on tblclasses.id=tblresult.ClassId";
+                                                        <?php $sql = "SELECT studentid,classid,assetpoint,finalpoint,grade,subjectcode from resultclasssubject";
                                                         $query = $dbh->prepare($sql);
                                                         $query->execute();
                                                         $results = $query->fetchAll(PDO::FETCH_OBJ);
@@ -136,19 +124,14 @@ if (strlen($_SESSION['alogin']) == "") {
                                                             foreach ($results as $result) {   ?>
                                                                 <tr>
                                                                     <td><?php echo htmlentities($cnt); ?></td>
-                                                                    <td><?php echo htmlentities($result->StudentName); ?></td>
-                                                                    <td><?php echo htmlentities($result->RollId); ?></td>
-                                                                    <td><?php echo htmlentities($result->ClassName); ?>(<?php echo htmlentities($result->Section); ?>)</td>
-                                                                    <td><?php echo htmlentities($result->RegDate); ?></td>
-                                                                    <td><?php if ($result->Status == 1) {
-                                                                            echo htmlentities('Active');
-                                                                        } else {
-                                                                            echo htmlentities('Blocked');
-                                                                        }
-                                                                        ?></td>
+                                                                    <td><?php echo htmlentities($result->StudentID); ?></td>
+                                                                    <td><?php echo htmlentities($result->ClassID); ?> (<?php echo htmlentities($result->SubjectCode); ?>)</td>
+                                                                    <td><?php echo htmlentities($result->AssetPoint); ?>
+                                                                    <td><?php echo htmlentities($result->FinalPoint); ?></td>
+                                                                    <td><?php echo htmlentities($result->Grade); ?></td>
                                                                     <td>
-                                                                        <a href="edit-result.php?stid=<?php echo htmlentities($result->StudentId); ?>"><i class="fa fa-edit" title="Edit Record"></i> </a>
-
+                                                                        <a href="edit-result.php?stid=<?php echo htmlentities($result->StudentID);?>&cid=<?php echo htmlentities($result->ClassID);?>">
+                                                                        <i class="fa fa-edit" title="Edit Record"></i> </a>
                                                                     </td>
                                                                 </tr>
                                                         <?php $cnt = $cnt + 1;

@@ -6,36 +6,25 @@ if (strlen($_SESSION['alogin']) == "") {
     header("Location: index.php");
 } else {
     if (isset($_POST['submit'])) {
-        $marks = array();
         $class = $_POST['class'];
         $studentid = $_POST['studentid'];
-        $mark = $_POST['marks'];
-
-        $stmt = $dbh->prepare("SELECT tblsubjects.SubjectName,tblsubjects.id FROM tblsubjectcombination join  tblsubjects on  tblsubjects.id=tblsubjectcombination.SubjectId WHERE tblsubjectcombination.ClassId=:cid order by tblsubjects.SubjectName");
-        $stmt->execute(array(':cid' => $class));
-        $sid1 = array();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-
-            array_push($sid1, $row['id']);
+        $assetpoint = $_POST['assetpoint'];
+        $finalpoint = $_POST['finalpoint'];
+        $stmt = $dbh->prepare("UPDATE resultclasssubject
+                            SET finalpoint = :finalpoint, assetpoint = :assetpoint, grade = round(:finalpoint*percentage + :assetpoint*(1-percentage),2)
+                            WHERE studentid=:studentid and classid=:class;");
+        $stmt->bindParam(':studentid', $studentid, PDO::PARAM_STR);
+        $stmt->bindParam(':class', $class, PDO::PARAM_STR);
+        $stmt->bindParam(':assetpoint', $assetpoint, PDO::PARAM_STR);
+        $stmt->bindParam(':finalpoint', $finalpoint, PDO::PARAM_STR);
+        $stmt->execute();
+        $lastInsertId = $dbh->lastInsertId();
+        if ($stmt->rowCount() > 0) {
+            $msg = "Result info added successfully";
+        } else {
+            $error = "Something went wrong. Please try again";
         }
-
-        for ($i = 0; $i < count($mark); $i++) {
-            $mar = $mark[$i];
-            $sid = $sid1[$i];
-            $sql = "INSERT INTO  tblresult(StudentId,ClassId,SubjectId,marks) VALUES(:studentid,:class,:sid,:marks)";
-            $query = $dbh->prepare($sql);
-            $query->bindParam(':studentid', $studentid, PDO::PARAM_STR);
-            $query->bindParam(':class', $class, PDO::PARAM_STR);
-            $query->bindParam(':sid', $sid, PDO::PARAM_STR);
-            $query->bindParam(':marks', $mar, PDO::PARAM_STR);
-            $query->execute();
-            $lastInsertId = $dbh->lastInsertId();
-            if ($lastInsertId) {
-                $msg = "Result info added successfully";
-            } else {
-                $error = "Something went wrong. Please try again";
-            }
-        }
+    }
     }
 ?>
     <!DOCTYPE html>
@@ -59,26 +48,15 @@ if (strlen($_SESSION['alogin']) == "") {
                 $.ajax({
                     type: "POST",
                     url: "get_student.php",
-                    data: 'classid=' + val,
+                    data: 'class=' + val,
                     success: function(data) {
-                        $("#studentid").html(data);
-
-                    }
-                });
-                $.ajax({
-                    type: "POST",
-                    url: "get_student.php",
-                    data: 'classid1=' + val,
-                    success: function(data) {
-                        $("#subject").html(data);
-
+                        $("#studentid").html(data); //Set the HTML of the #studentid element to the data returned from the PHP file
                     }
                 });
             }
         </script>
         <script>
             function getresult(val, clid) {
-
                 var clid = $(".clid").val();
                 var val = $(".stid").val();;
                 var abh = clid + '$' + val;
@@ -89,7 +67,6 @@ if (strlen($_SESSION['alogin']) == "") {
                     data: 'studclass=' + abh,
                     success: function(data) {
                         $("#reslt").html(data);
-
                     }
                 });
             }
@@ -100,26 +77,20 @@ if (strlen($_SESSION['alogin']) == "") {
 
     <body class="top-navbar-fixed">
         <div class="main-wrapper">
-
             <!-- ========== TOP NAVBAR ========== -->
             <?php include('includes/topbar.php'); ?>
             <!-- ========== WRAPPER FOR BOTH SIDEBARS & MAIN CONTENT ========== -->
             <div class="content-wrapper">
                 <div class="content-container">
-
                     <!-- ========== LEFT SIDEBAR ========== -->
                     <?php include('includes/leftbar.php'); ?>
                     <!-- /.left-sidebar -->
-
                     <div class="main-page">
-
                         <div class="container-fluid">
                             <div class="row page-title-div">
                                 <div class="col-md-6">
                                     <h2 class="title">Declare Result</h2>
-
                                 </div>
-
                                 <!-- /.col-md-6 text-right -->
                             </div>
                             <!-- /.row -->
@@ -127,81 +98,71 @@ if (strlen($_SESSION['alogin']) == "") {
                                 <div class="col-md-6">
                                     <ul class="breadcrumb">
                                         <li><a href="dashboard.php"><i class="fa fa-home"></i> Home</a></li>
-
                                         <li class="active">Student Result</li>
                                     </ul>
                                 </div>
-
                             </div>
                             <!-- /.row -->
                         </div>
                         <div class="container-fluid">
-
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="panel">
-
                                         <div class="panel-body">
                                             <?php if ($msg) { ?>
                                                 <div class="alert alert-success left-icon-alert" role="alert">
                                                     <strong>Well done!</strong><?php echo htmlentities($msg); ?>
-                                                </div><?php } else if ($error) { ?>
+                                                </div>
+                                                <?php } else if ($error) { ?>
                                                 <div class="alert alert-danger left-icon-alert" role="alert">
                                                     <strong>Oh snap!</strong> <?php echo htmlentities($error); ?>
                                                 </div>
                                             <?php } ?>
+                                            
                                             <form class="form-horizontal" method="post">
-
                                                 <div class="form-group">
                                                     <label for="default" class="col-sm-2 control-label">Class</label>
                                                     <div class="col-sm-10">
-                                                        <select name="class" class="form-control clid" id="classid" onChange="getStudent(this.value);" required="required">
+                                                        <select name="class" class="form-control clid" id="class" onChange="getStudent(this.value);" required="required">
                                                             <option value="">Select Class</option>
-                                                            <?php $sql = "SELECT * from tblclasses";
+                                                            <?php $sql = "SELECT * from tblclass";
                                                             $query = $dbh->prepare($sql);
                                                             $query->execute();
                                                             $results = $query->fetchAll(PDO::FETCH_OBJ);
                                                             if ($query->rowCount() > 0) {
                                                                 foreach ($results as $result) {   ?>
-                                                                    <option value="<?php echo htmlentities($result->id); ?>"><?php echo htmlentities($result->ClassName); ?>&nbsp; Section-<?php echo htmlentities($result->Section); ?></option>
-                                                            <?php }
+                                                                    <option value="<?php echo htmlentities($result->ClassID); ?>">
+                                                                    <?php echo htmlentities($result->ClassID)." - ".htmlentities($result->Description); ?> </option>
+                                                                    <?php }
                                                             } ?>
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="date" class="col-sm-2 control-label ">Student Name</label>
+                                                    <label for="date" class="col-sm-2 control-label ">Student ID</label>
                                                     <div class="col-sm-10">
-                                                        <select name="studentid" class="form-control stid" id="studentid" required="required" onChange="getresult(this.value);">
+                                                        <select name="studentid" class="form-control stid" id="studentid" required="required" >
                                                         </select>
                                                     </div>
                                                 </div>
-
                                                 <div class="form-group">
-
+                                                    <label for="date" class="col-sm-2 control-label">Assetment Point</label>
                                                     <div class="col-sm-10">
-                                                        <div id="reslt">
-                                                        </div>
+                                                        <input type="number" step="0.1" class="form-control stid" name="assetpoint" id="assetpoint">
                                                     </div>
                                                 </div>
-
                                                 <div class="form-group">
-                                                    <label for="date" class="col-sm-2 control-label">Subjects</label>
+                                                    <label for="date" class="col-sm-2 control-label">Final Point</label>
                                                     <div class="col-sm-10">
-                                                        <div id="subject">
-                                                        </div>
+                                                        <input type="number" step="0.1" class="form-control stid" name="finalpoint" id="finalpoint">
                                                     </div>
                                                 </div>
-
-
-
                                                 <div class="form-group">
                                                     <div class="col-sm-offset-2 col-sm-10">
-                                                        <button type="submit" name="submit" id="submit" class="btn btn-primary">Declare Result</button>
+                                                        <button type="submit" name="submit" id="submit" class="btn btn-primary">Upload Result</button>
                                                     </div>
                                                 </div>
                                             </form>
-
                                         </div>
                                     </div>
                                 </div>
@@ -236,4 +197,4 @@ if (strlen($_SESSION['alogin']) == "") {
     </body>
 
     </html>
-<?PHP } ?>
+<?PHP  ?>
