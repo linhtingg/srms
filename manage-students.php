@@ -8,7 +8,8 @@ if (strlen($_SESSION['alogin']) == "") {
     //For Deleting student
     if ($_GET['stid']) {
         $stid = $_GET['stid'];
-        $sql = "delete from tblstudent where studentid=:stid";
+        $sql = "delete from tblstudent where studentid=:stid;";
+                //delete from tblresult where studentid=:stid;
         $query = $dbh->prepare($sql);
         $query->bindParam(':stid', $stid, PDO::PARAM_STR);
         $query->execute();
